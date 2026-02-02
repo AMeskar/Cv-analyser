@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: cv-analyzer
 
 resources:
-  - ../../../apps/backend/k8s/namespace.yaml
-  - ../../../apps/backend/k8s/serviceaccount.yaml
-  - ../../../apps/backend/k8s/deployment.yaml
-  - ../../../apps/backend/k8s/service.yaml
+  - ../../../../apps/backend/k8s/namespace.yaml
+  - ../../../../apps/backend/k8s/serviceaccount.yaml
+  - ../../../../apps/backend/k8s/deployment.yaml
+  - ../../../../apps/backend/k8s/service.yaml
