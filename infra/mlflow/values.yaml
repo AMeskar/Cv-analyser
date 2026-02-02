@@ -1,0 +1,40 @@
+# MLflow Helm chart values
+# Using community MLflow chart or custom deployment
+
+image:
+  repository: ghcr.io/mlflow/mlflow
+  tag: v2.8.1
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 5000
+
+backendStore:
+  type: postgresql
+  postgresql:
+    host: postgres
+    port: 5432
+    database: mlflow
+    username: mlflow
+    password: mlflow
+
+defaultArtifactRoot: s3://mlflow-artifacts/
+
+s3:
+  enabled: true
+  bucket: mlflow-artifacts
+  endpoint: minio:9000
+  accessKey: minioadmin
+  secretKey: minioadmin
+  secure: false
+
+resources:
+  requests:
+    memory: "512Mi"
+    cpu: "250m"
+  limits:
+    memory: "1Gi"
+    cpu: "500m"
+
+replicas: 1

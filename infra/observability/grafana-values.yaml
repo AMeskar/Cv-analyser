@@ -1,0 +1,41 @@
+# Grafana Helm chart values
+
+adminUser: admin
+adminPassword: admin  # Change in production
+
+service:
+  type: ClusterIP
+  port: 80
+
+persistence:
+  enabled: true
+  size: 10Gi
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "100m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Loki
+        type: loki
+        access: proxy
+        url: http://loki:3100
+      - name: Tempo
+        type: tempo
+        access: proxy
+        url: http://tempo:3200
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus:9090
+      - name: Mimir
+        type: prometheus
+        access: proxy
+        url: http://mimir:9009

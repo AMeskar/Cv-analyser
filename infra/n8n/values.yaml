@@ -1,0 +1,34 @@
+# n8n Helm chart values
+
+image:
+  repository: n8nio/n8n
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 5678
+
+env:
+  - name: DB_TYPE
+    value: postgresdb
+  - name: DB_POSTGRESDB_HOST
+    value: postgres
+  - name: DB_POSTGRESDB_PORT
+    value: "5432"
+  - name: DB_POSTGRESDB_DATABASE
+    value: n8n
+  - name: DB_POSTGRESDB_USER
+    value: n8n
+  - name: DB_POSTGRESDB_PASSWORD
+    value: n8n
+
+resources:
+  requests:
+    memory: "512Mi"
+    cpu: "250m"
+  limits:
+    memory: "1Gi"
+    cpu: "500m"
+
+replicas: 1

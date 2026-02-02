@@ -1,0 +1,73 @@
+# Grafana Alloy configuration
+
+logging {
+  level = "info"
+}
+
+prometheus.exporter.self {
+  enabled = true
+}
+
+loki.source.file "app_logs" {
+  targets = [
+    {
+      __path__ = "/var/log/apps/*.log",
+      job = "cv-analyzer",
+    },
+  ]
+  forward_to = [loki.write.loki]
+}
+
+loki.write "loki" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}
+
+prometheus.scrape "backend" {
+  targets = [
+    {
+      __address__ = "backend:8080",
+      job = "cv-analyzer-backend",
+    },
+  ]
+  forward_to = [prometheus.remote_write.mimir]
+}
+
+prometheus.scrape "worker" {
+  targets = [
+    {
+      __address__ = "worker:9090",
+      job = "cv-analyzer-worker",
+    },
+  ]
+  forward_to = [prometheus.remote_write.mimir]
+}
+
+prometheus.remote_write "mimir" {
+  endpoint {
+    url = "http://mimir:9009/api/v1/push"
+  }
+}
+
+otelcol.receiver.otlp "tempo" {
+  grpc {
+    endpoint = "0.0.0.0:4317"
+  }
+  http {
+    endpoint = "0.0.0.0:4318"
+  }
+  output {
+    traces = [otelcol.exporter.otlp.tempo.input]
+  }
+}
+
+otelcol.exporter.otlp "tempo" {
+  client {
+    endpoint = "tempo:4317"
+  }
+}
+
+loki.source.kubernetes "k8s_logs" {
+  forward_to = [loki.write.loki]
+}

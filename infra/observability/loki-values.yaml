@@ -1,0 +1,18 @@
+# Loki Helm chart values
+
+service:
+  type: ClusterIP
+  port: 3100
+
+storage:
+  type: filesystem
+
+resources:
+  requests:
+    memory: "512Mi"
+    cpu: "250m"
+  limits:
+    memory: "1Gi"
+    cpu: "500m"
+
+replicas: 1

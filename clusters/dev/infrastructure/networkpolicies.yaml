@@ -1,0 +1,106 @@
+# Default deny all
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: cv-analyzer
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+
+# Frontend policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: frontend-policy
+  namespace: cv-analyzer
+spec:
+  podSelector:
+    matchLabels:
+      app: frontend
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: backend
+
+# Backend policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backend-policy
+  namespace: cv-analyzer
+spec:
+  podSelector:
+    matchLabels:
+      app: backend
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: frontend
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgres
+  - namespaceSelector:
+      matchLabels:
+        name: minio
+  - namespaceSelector:
+      matchLabels:
+        name: observability
+
+# Worker policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: worker-policy
+  namespace: cv-analyzer
+spec:
+  podSelector:
+    matchLabels:
+      app: worker
+  policyTypes:
+  - Ingress
+  - Egress
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgres
+  - namespaceSelector:
+      matchLabels:
+        name: minio
+  - namespaceSelector:
+      matchLabels:
+        name: mlflow
+  - namespaceSelector:
+      matchLabels:
+        name: observability
+  # Allow egress to external AI providers
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443

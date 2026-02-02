@@ -1,0 +1,46 @@
+# Prometheus Helm chart values
+
+service:
+  type: ClusterIP
+  port: 9090
+
+storage:
+  type: persistent
+  size: 20Gi
+
+resources:
+  requests:
+    memory: "1Gi"
+    cpu: "500m"
+  limits:
+    memory: "2Gi"
+    cpu: "1000m"
+
+scrape_configs:
+  - job_name: 'cv-analyzer-backend'
+    kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+          names:
+            - cv-analyzer
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_label_app]
+        regex: backend
+        action: keep
+      - source_labels: [__meta_kubernetes_pod_ip]
+        target_label: __address__
+        replacement: '${1}:8080'
+  
+  - job_name: 'cv-analyzer-worker'
+    kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+          names:
+            - cv-analyzer
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_label_app]
+        regex: worker
+        action: keep
+      - source_labels: [__meta_kubernetes_pod_ip]
+        target_label: __address__
+        replacement: '${1}:9090'
