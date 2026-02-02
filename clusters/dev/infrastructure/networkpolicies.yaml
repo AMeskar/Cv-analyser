@@ -10,6 +10,7 @@ spec:
   - Ingress
   - Egress
 
+---
 # Frontend policy
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -34,6 +35,7 @@ spec:
         matchLabels:
           app: backend
 
+---
 # Backend policy
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -68,6 +70,7 @@ spec:
       matchLabels:
         name: observability
 
+---
 # Worker policy
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
